@@ -92,9 +92,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         if (permissionResult.isDisable()) {
+            //用户傲娇的勾选了不再提示，并且拒绝了权限
             Toast.makeText(getApplicationContext(), "权限被禁用啦，请手动开启权限", Toast.LENGTH_SHORT).show();
             PermissionManager.toSetting(MainActivity.this);
         } else {
+            //用户拒绝了权限
             Toast.makeText(getApplicationContext(), "宝宝摔倒了，要开启权限才能爬起来~~~", Toast.LENGTH_SHORT).show();
         }
 
