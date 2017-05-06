@@ -13,7 +13,8 @@ import com.tk.persample.common.PermissionResult;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.ReplaySubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * <pre>
@@ -24,11 +25,12 @@ import io.reactivex.subjects.PublishSubject;
  */
 public class RxPermissionFragment extends Fragment {
     public static final int REQUEST = 233;
-    private PublishSubject<PermissionResult> subject = PublishSubject.create();
+    private Subject<PermissionResult> subject;
     private List<Permission> permissionList = new ArrayList<>();
 
     public void request(@NonNull String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            subject = ReplaySubject.create(2);
             permissionList.clear();
             List<String> preRequest = new ArrayList<>();
             List<String> refuse = new ArrayList<>();
@@ -56,7 +58,7 @@ public class RxPermissionFragment extends Fragment {
                 } else {
                     subject.onNext(new PermissionResult(false, true, permissionList));
                 }
-                onResult();
+                subject.onComplete();
                 return;
             }
             //发起请求
@@ -88,15 +90,10 @@ public class RxPermissionFragment extends Fragment {
             }
         }
         subject.onNext(new PermissionResult(successful, disable, permissionList));
-        onResult();
-    }
-
-    private void onResult() {
         subject.onComplete();
-        subject = PublishSubject.create();
     }
 
-    public PublishSubject<PermissionResult> getSubject() {
+    public Subject<PermissionResult> getSubject() {
         return subject;
     }
 
